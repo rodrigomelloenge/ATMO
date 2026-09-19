@@ -313,7 +313,10 @@
         <div class="header">
             <h1>ATMO MESO 905</h1>
             <p>APARTAMENTO — APORTES, GASTOS E FINANCIAMENTO</p>
-            <div id="syncStatus" class="sync-status">Conectando...</div>
+            <div style="margin-top: 20px;">
+                <button onclick="loadData()" style="padding: 8px 16px; font-size: 12px; background: #c89d5c; color: #0f1419; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">↻ Atualizar Dados</button>
+                <div id="syncStatus" class="sync-status" style="margin-top: 10px; display: inline-block; margin-left: 15px;">Pronto</div>
+            </div>
         </div>
 
         <!-- DASHBOARD -->
@@ -831,9 +834,8 @@
             status.className = 'sync-status ' + type;
         }
 
-        // Load on start and every 10 seconds
+        // Load on start only
         loadData();
-        setInterval(loadData, 10000);
     </script>
 </body>
 </html>
