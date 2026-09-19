@@ -705,8 +705,25 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('pt-BR');
+            
+            // Se for número (timestamp do Google Sheets)
+            if (typeof dateStr === 'number') {
+                const date = new Date((dateStr - 25569) * 86400 * 1000);
+                return date.toLocaleDateString('pt-BR');
+            }
+            
+            // Se for string de data (YYYY-MM-DD)
+            if (typeof dateStr === 'string') {
+                if (dateStr.includes('/')) {
+                    return dateStr; // Já está formatada
+                }
+                const date = new Date(dateStr + 'T00:00:00');
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleDateString('pt-BR');
+                }
+            }
+            
+            return '';
         }
 
         function calculateTotals() {
