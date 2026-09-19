@@ -783,12 +783,11 @@
             }
 
             tbody.innerHTML = data.aportes
-                .sort((a, b) => new Date(b['Data']) - new Date(a['Data']))
                 .map(a => `
                     <tr>
-                        <td>${formatDate(a['Data'])}</td>
+                        <td>${a['Data'] || ''}</td>
                         <td>${a['Pessoa'] || ''}</td>
-                        <td>${formatCurrency(a['Valor'])}</td>
+                        <td>${formatCurrency(cleanCurrency(a['Valor']))}</td>
                         <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
                     </tr>
                 `).join('');
@@ -802,14 +801,13 @@
             }
 
             tbody.innerHTML = data.gastos
-                .filter(g => g['Data'] && g['Data'] <= '2026-12-31')
-                .sort((a, b) => new Date(b['Data']) - new Date(a['Data']))
+                .filter(g => g['Data'])
                 .map(g => `
                     <tr>
-                        <td>${formatDate(g['Data'])}</td>
+                        <td>${g['Data'] || ''}</td>
                         <td>${g['Descrição'] || ''}</td>
                         <td>${g['Categoria'] || ''}</td>
-                        <td>${formatCurrency(g['Valor'])}</td>
+                        <td>${formatCurrency(cleanCurrency(g['Valor']))}</td>
                         <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
                     </tr>
                 `).join('');
