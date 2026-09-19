@@ -694,9 +694,10 @@
             }
         }
 
-        function cleanCurrency(value) {
-            if (!value) return 0;
-            return parseFloat(String(value).replace(/R\$\s?/g, '').replace(/\./g, '').replace(/,/, '.'));
+        function cleanDate(dateStr) {
+            if (!dateStr) return '';
+            // Extrai apenas YYYY-MM-DD de formatos como "2026-08-26T03:00:00.000Z"
+            return String(dateStr).split('T')[0];
         }
 
         function formatCurrency(value) {
@@ -785,7 +786,7 @@
             tbody.innerHTML = data.aportes
                 .map(a => `
                     <tr>
-                        <td>${a['Data'] || ''}</td>
+                        <td>${cleanDate(a['Data'])}</td>
                         <td>${a['Pessoa'] || ''}</td>
                         <td>${formatCurrency(cleanCurrency(a['Valor']))}</td>
                         <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
@@ -804,7 +805,7 @@
                 .filter(g => g['Data'])
                 .map(g => `
                     <tr>
-                        <td>${g['Data'] || ''}</td>
+                        <td>${cleanDate(g['Data'])}</td>
                         <td>${g['Descrição'] || ''}</td>
                         <td>${g['Categoria'] || ''}</td>
                         <td>${formatCurrency(cleanCurrency(g['Valor']))}</td>
