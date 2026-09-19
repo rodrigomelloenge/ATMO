@@ -700,6 +700,12 @@
             return String(dateStr).split('T')[0];
         }
 
+        function cleanCurrency(value) {
+            if (!value) return 0;
+            // Remove "R$", pontos de milhar e converte vírgula decimal
+            return parseFloat(String(value).replace(/R\$\s?/g, '').replace(/\./g, '').replace(/,/, '.'));
+        }
+
         function formatCurrency(value) {
             return 'R$ ' + parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
