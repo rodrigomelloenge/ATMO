@@ -720,6 +720,11 @@
             }
         }
 
+        function cleanCurrency(value) {
+            if (!value) return 0;
+            return parseFloat(String(value).replace(/R\$\s?/g, '').replace(/\./g, '').replace(/,/, '.'));
+        }
+
         function formatCurrency(value) {
             return 'R$ ' + parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
@@ -733,21 +738,21 @@
         function calculateTotals() {
             const claudiaAport = data.aportes
                 .filter(a => a['Pessoa'] === 'Claudia')
-                .reduce((sum, a) => sum + (parseFloat(a['Valor']) || 0), 0);
+                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
             
             const rodrigoAport = data.aportes
                 .filter(a => a['Pessoa'] === 'Rodrigo')
-                .reduce((sum, a) => sum + (parseFloat(a['Valor']) || 0), 0);
+                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
             
             const maeAport = data.aportes
                 .filter(a => a['Pessoa'] === 'Mãe')
-                .reduce((sum, a) => sum + (parseFloat(a['Valor']) || 0), 0);
+                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
             
             const totalAport = claudiaAport + rodrigoAport + maeAport;
             
             const totalGasto2026 = data.gastos
                 .filter(g => g['Data'] && g['Data'] <= '2026-12-31')
-                .reduce((sum, g) => sum + (parseFloat(g['Valor']) || 0), 0);
+                .reduce((sum, g) => sum + cleanCurrency(g['Valor']), 0);
             
             return { claudiaAport, rodrigoAport, maeAport, totalAport, totalGasto2026 };
         }
@@ -831,8 +836,8 @@
                 .map(a => `
                     <tr>
                         <td>${a['Ano'] || ''}</td>
-                        <td>${formatCurrency(a['Valor'])}</td>
-                        <td>${formatCurrency(a['Saldo Devedor'])}</td>
+                        <td>${formatCurrency(cleanCurrency(a['Valor']))}</td>
+                        <td>${formatCurrency(cleanCurrency(a['Saldo Devedor']))}</td>
                         <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
                     </tr>
                 `).join('');
