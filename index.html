@@ -854,7 +854,23 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywOF6vSgJ-by1GxdETY9f1mmndMdN4o-YeE--VPyhRbel9c1XNfntlWSZYnscKY0Kv/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFcy7vz4fO-5WZWat71QQV-amk6NRodGlI_mhtsTAIyNcCSinov-ZtKTWL3f_JtRWi/exec';
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+        
+        async function fetchWithCORS(url, options) {
+            try {
+                // Tentar sem proxy primeiro
+                const response = await fetch(url, options);
+                if (response.ok) return response;
+                
+                // Se falhar, tentar com proxy
+                const proxyResponse = await fetch(CORS_PROXY + url, options);
+                return proxyResponse;
+            } catch (error) {
+                console.error('Ambas as tentativas falharam:', error);
+                throw error;
+            }
+        }
 
         let data = {
             aportes: [],
@@ -999,7 +1015,7 @@
                 
                 console.log('Iniciando fetch para:', APPS_SCRIPT_URL);
                 
-                const response = await fetch(APPS_SCRIPT_URL, { 
+                const response = await fetchWithCORS(APPS_SCRIPT_URL, { 
                     method: 'POST', 
                     body: formData
                 });
@@ -1147,7 +1163,7 @@
                 formData.append('date', date);
                 formData.append('person', person);
                 formData.append('value', value);
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await fetchWithCORS(APPS_SCRIPT_URL, { method: 'POST', body: formData });
                 await new Promise(r => setTimeout(r, 1000));
                 await loadData();
                 document.getElementById('aportPerson').value = '';
@@ -1200,7 +1216,7 @@
                 formData.append('pagamento', pagamento === 'parcelado' ? 'Parcelado' : 'À Vista');
                 formData.append('parcelas', parcelas);
                 formData.append('dataPrimeira', dataPrimeira);
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await fetchWithCORS(APPS_SCRIPT_URL, { method: 'POST', body: formData });
                 await new Promise(r => setTimeout(r, 1000));
                 await loadData();
                 document.getElementById('gastoDescription').value = '';
@@ -1235,7 +1251,7 @@
                 formData.append('year', year);
                 formData.append('value', value);
                 formData.append('saldoDevedor', saldoDevedor);
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await fetchWithCORS(APPS_SCRIPT_URL, { method: 'POST', body: formData });
                 await new Promise(r => setTimeout(r, 1000));
                 await loadData();
                 document.getElementById('amortValue').value = '';
