@@ -971,11 +971,32 @@
                 updateSyncStatus('loading', 'Sincronizando...');
                 const formData = new FormData();
                 formData.append('action', 'getData');
-                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
-                const result = await response.json();
+                
+                console.log('Iniciando fetch para:', APPS_SCRIPT_URL);
+                
+                const response = await fetch(APPS_SCRIPT_URL, { 
+                    method: 'POST', 
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP Error: ${response.status}`);
+                }
+                
+                const text = await response.text();
+                console.log('Response text:', text.substring(0, 100));
+                
+                const result = JSON.parse(text);
+                
                 data.aportes = result.aportes || [];
                 data.gastos = result.gastos || [];
                 data.amortizacoes = result.amortizacoes || [];
+                
+                console.log('Dados carregados:', data);
+                
                 updateUI();
                 updateSyncStatus('success', 'Sincronizado');
                 setTimeout(() => {
@@ -983,8 +1004,9 @@
                     document.getElementById('syncStatus').className = 'sync-status';
                 }, 2000);
             } catch (error) {
-                console.error(error);
-                updateSyncStatus('error', 'Erro na sincronização');
+                console.error('Erro ao sincronizar:', error);
+                console.error('Stack:', error.stack);
+                updateSyncStatus('error', `Erro: ${error.message}`);
             }
         }
 
