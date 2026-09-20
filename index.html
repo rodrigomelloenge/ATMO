@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ATMO Meso 905 - Dashboard Compartilhado</title>
     <style>
         * {
@@ -16,7 +16,7 @@
             background: #0f1419;
             color: #e0e0e0;
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
         }
 
         .container {
@@ -24,13 +24,16 @@
             margin: 0 auto;
         }
 
+        /* HEADER */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2a3344;
         }
 
         .header h1 {
-            font-size: 36px;
+            font-size: clamp(24px, 5vw, 36px);
             color: #c89d5c;
             font-weight: 300;
             letter-spacing: 2px;
@@ -39,9 +42,38 @@
 
         .header p {
             color: #888;
-            font-size: 14px;
+            font-size: clamp(12px, 2vw, 14px);
             letter-spacing: 1px;
             margin-bottom: 20px;
+        }
+
+        .header-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 13px;
+            background: linear-gradient(135deg, #c89d5c 0%, #b8884d 100%);
+            color: #0f1419;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(200, 157, 92, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         .sync-status {
@@ -51,7 +83,8 @@
             border-radius: 4px;
             font-size: 12px;
             color: #10b981;
-            margin-bottom: 20px;
+            min-width: 120px;
+            text-align: center;
         }
 
         .sync-status.error {
@@ -64,228 +97,140 @@
             color: #fbbf24;
         }
 
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .card-section {
-            background: #1a1f2e;
-            border: 1px solid #2a3344;
-            border-radius: 8px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
-        }
-
-        .card-section h2 {
-            color: #c89d5c;
-            font-size: 18px;
-            font-weight: 300;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #2a3344;
-            letter-spacing: 1px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select {
-            width: 100%;
-            padding: 12px 15px;
-            background: #0f1419;
-            border: 1px solid #2a3344;
-            border-radius: 6px;
-            color: #e0e0e0;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: #c89d5c;
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(200, 157, 92, 0.1);
-        }
-
-        button {
-            background: linear-gradient(135deg, #c89d5c 0%, #b8884d 100%);
-            color: #0f1419;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 13px;
-            transition: all 0.3s;
-            width: 100%;
-        }
-
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(200, 157, 92, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        .alert {
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 13px;
-        }
-
-        .alert.success {
-            background: #065f46;
-            color: #10b981;
-        }
-
-        .alert.error {
-            background: #7f1d1d;
-            color: #ef4444;
-        }
-
-        .balance-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .balance-card {
-            background: #0f1419;
-            padding: 15px;
-            border-radius: 6px;
-            text-align: center;
-            border: 1px solid #2a3344;
-        }
-
-        .balance-card-label {
-            font-size: 11px;
-            color: #666;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .balance-card-value {
-            font-size: 18px;
-            font-weight: 600;
-            color: #c89d5c;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th {
-            background: #0f1419;
-            color: #888;
-            padding: 12px;
-            text-align: left;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            border-bottom: 1px solid #2a3344;
-        }
-
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #2a3344;
-            font-size: 13px;
-        }
-
-        tr:hover {
-            background: #0f1419;
-        }
-
-        .btn-small {
-            background: #ef4444;
-            color: white;
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            font-size: 11px;
-            cursor: pointer;
-            width: auto;
-        }
-
-        .btn-small:hover {
-            background: #dc2626;
-        }
-
+        /* DASHBOARD CARDS */
         .dashboard {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            gap: 15px;
             margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
         }
 
         .dashboard-card {
             background: #1a1f2e;
-            padding: 20px;
-            border-radius: 8px;
             border: 1px solid #2a3344;
-            text-align: center;
+            border-radius: 8px;
+            padding: clamp(15px, 3vw, 25px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            border-color: #c89d5c;
+            box-shadow: 0 0 15px rgba(200, 157, 92, 0.1);
         }
 
         .card-label {
-            font-size: 11px;
             color: #888;
-            text-transform: uppercase;
+            font-size: clamp(11px, 2vw, 13px);
+            letter-spacing: 1px;
             margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .card-value {
-            font-size: 24px;
-            font-weight: 300;
+            font-size: clamp(18px, 5vw, 28px);
+            font-weight: 600;
             color: #c89d5c;
-        }
-
-        .card-value.negative {
-            color: #ef4444;
         }
 
         .card-value.positive {
             color: #10b981;
         }
 
+        .card-value.negative {
+            color: #ef4444;
+        }
+
+        /* DECLARAÇÃO DE BENS */
+        .declaration-section {
+            background: #1a1f2e;
+            border: 1px solid #2a3344;
+            border-radius: 8px;
+            padding: clamp(20px, 3vw, 30px);
+            margin-bottom: 40px;
+        }
+
+        .declaration-section h2 {
+            color: #c89d5c;
+            font-size: 16px;
+            font-weight: 300;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a3344;
+        }
+
+        .declaration-controls {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .declaration-controls select {
+            padding: 10px 15px;
+            background: #2a3344;
+            color: #e0e0e0;
+            border: 1px solid #3a4454;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .declaration-value {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .declaration-value-label {
+            color: #888;
+            font-size: 12px;
+            letter-spacing: 1px;
+        }
+
+        .declaration-value-amount {
+            font-size: clamp(20px, 4vw, 28px);
+            color: #c89d5c;
+            font-weight: 600;
+        }
+
+        /* TABS */
         .tabs {
             display: flex;
             gap: 10px;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             border-bottom: 1px solid #2a3344;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
             padding: 12px 20px;
             background: transparent;
-            border: none;
             color: #888;
-            cursor: pointer;
-            font-size: 13px;
+            border: none;
             border-bottom: 2px solid transparent;
-            transition: all 0.3s;
-            width: auto;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: auto;
         }
 
         .tab-btn.active {
@@ -293,6 +238,12 @@
             border-bottom-color: #c89d5c;
         }
 
+        .tab-btn:hover {
+            color: #c89d5c;
+            transform: none;
+        }
+
+        /* TAB CONTENT */
         .tab-content {
             display: none;
         }
@@ -301,32 +252,337 @@
             display: block;
         }
 
-        .loading {
-            text-align: center;
-            padding: 40px;
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1a1f2e;
+            border: 1px solid #2a3344;
+            border-radius: 12px;
+            padding: clamp(20px, 3vw, 40px);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #2a3344;
+        }
+
+        .modal-header h2 {
+            color: #c89d5c;
+            font-size: 18px;
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+
+        .modal-close {
+            background: transparent;
             color: #888;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            color: #c89d5c;
+            transform: none;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #888;
+            font-size: 12px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: #2a3344;
+            color: #e0e0e0;
+            border: 1px solid #3a4454;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #c89d5c;
+            background: #2a3344;
+            box-shadow: 0 0 10px rgba(200, 157, 92, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .alert.success {
+            background: #1a3a2e;
+            color: #10b981;
+            border: 1px solid #10b981;
+        }
+
+        .alert.error {
+            background: #3a1a1a;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+        }
+
+        /* TABLE */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 25px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #2a3344;
+            color: #c89d5c;
+            padding: 12px;
+            text-align: left;
+            font-size: 12px;
+            letter-spacing: 1px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #2a3344;
+            font-size: 13px;
+        }
+
+        tbody tr:hover {
+            background: #2a3344;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            min-width: auto;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+            transform: none;
+        }
+
+        /* BALANCE CARDS */
+        .balance-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 480px) {
+            .balance-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .balance-card {
+            background: #2a3344;
+            border: 1px solid #3a4454;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .balance-card-label {
+            color: #888;
+            font-size: 11px;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .balance-card-value {
+            color: #c89d5c;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                margin-bottom: 20px;
+                padding-bottom: 15px;
+            }
+
+            .header h1 {
+                margin-bottom: 5px;
+            }
+
+            .header-controls {
+                gap: 8px;
+            }
+
+            button {
+                padding: 10px 15px;
+                font-size: 12px;
+                min-width: 100px;
+            }
+
+            .declaration-controls {
+                gap: 10px;
+            }
+
+            .tabs {
+                gap: 5px;
+                margin-bottom: 20px;
+            }
+
+            .tab-btn {
+                padding: 10px 15px;
+                font-size: 12px;
+            }
+
+            .modal-content {
+                padding: clamp(15px, 3vw, 30px);
+                max-width: 90vw;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .tabs {
+                gap: 0;
+                margin-bottom: 15px;
+            }
+
+            .tab-btn {
+                flex: 1;
+                padding: 10px;
+                font-size: 11px;
+            }
+
+            button {
+                padding: 10px 12px;
+                font-size: 12px;
+                min-width: auto;
+            }
+
+            .declaration-value {
+                flex: 1;
+            }
+
+            .declaration-value-amount {
+                font-size: 20px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            thead th {
+                padding: 10px 8px;
+            }
+
+            tbody td {
+                padding: 10px 8px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header">
             <h1>ATMO MESO 905</h1>
             <p>APARTAMENTO — APORTES, GASTOS E FINANCIAMENTO</p>
-            <div style="margin-top: 20px;">
-                <button onclick="loadData()" style="padding: 8px 16px; font-size: 12px; background: #c89d5c; color: #0f1419; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">↻ Atualizar Dados</button>
-                <div id="syncStatus" class="sync-status" style="margin-top: 10px; display: inline-block; margin-left: 15px;">Pronto</div>
+            <div class="header-controls">
+                <button onclick="loadData()">↻ Atualizar</button>
+                <div class="sync-status" id="syncStatus">Pronto</div>
             </div>
         </div>
 
-        <!-- DASHBOARD -->
+        <!-- DASHBOARD CARDS -->
         <div class="dashboard" id="dashboard">
             <div class="dashboard-card">
                 <div class="card-label">Total Aportado</div>
                 <div class="card-value" id="dashTotalAport">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Total Gasto (2026)</div>
+                <div class="card-label">Total Gasto</div>
                 <div class="card-value" id="dashTotalGasto2026">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
@@ -334,45 +590,42 @@
                 <div class="card-value" id="dashSaldo">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Valor Imóvel + Benfeitorias</div>
+                <div class="card-label">Valor do Imóvel</div>
                 <div class="card-value" id="dashValorTotal">R$ 250.000,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Claudia (Aportado)</div>
+                <div class="card-label">Claudia</div>
                 <div class="card-value" id="dashClaudia">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Rodrigo (Aportado)</div>
+                <div class="card-label">Rodrigo</div>
                 <div class="card-value" id="dashRodrigo">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Mãe (Aportado)</div>
+                <div class="card-label">Mãe</div>
                 <div class="card-value" id="dashMae">R$ 0,00</div>
             </div>
             <div class="dashboard-card">
-                <div class="card-label">Saldo Devedor Financiamento</div>
+                <div class="card-label">Saldo Devedor</div>
                 <div class="card-value" id="dashSaldoDevedor">R$ 250.000,00</div>
             </div>
         </div>
 
         <!-- DECLARAÇÃO DE BENS -->
-        <div style="margin-top: 40px; padding: 30px; background: #1a1f2e; border: 1px solid #2a3344; border-radius: 8px;">
-            <h2 style="color: #c89d5c; font-size: 18px; font-weight: 300; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #2a3344; letter-spacing: 1px;">Declaração de Bens</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
-                <div class="form-group" style="margin: 0;">
-                    <label for="declaracaoAno">Escolha o Ano</label>
-                    <select id="declaracaoAno">
-                        <option value="">Selecione...</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                        <option value="2029">2029</option>
-                        <option value="2030">2030</option>
-                    </select>
-                </div>
-                <div style="text-align: right;">
-                    <div style="color: #aaa; font-size: 12px; margin-bottom: 8px;">Valor do Imóvel em 31/12</div>
-                    <div id="declaracaoValor" style="font-size: 24px; color: #c89d5c; font-weight: 600;">R$ 0,00</div>
+        <div class="declaration-section">
+            <h2>Declaração de Bens</h2>
+            <div class="declaration-controls">
+                <select id="declaracaoAno">
+                    <option value="">Selecione o ano...</option>
+                    <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                    <option value="2028">2028</option>
+                    <option value="2029">2029</option>
+                    <option value="2030">2030</option>
+                </select>
+                <div class="declaration-value">
+                    <div class="declaration-value-label">Valor em 31/12</div>
+                    <div class="declaration-value-amount" id="declaracaoValor">R$ 250.000,00</div>
                 </div>
             </div>
         </div>
@@ -386,196 +639,75 @@
 
         <!-- APORTES TAB -->
         <div id="aportes" class="tab-content active">
-            <div class="main-grid">
-                <div class="card-section">
-                    <h2>Registrar Aporte</h2>
-                    <div id="aportAlert"></div>
-
-                    <div class="form-group">
-                        <label for="aportPerson">Pessoa</label>
-                        <select id="aportPerson">
-                            <option value="">Selecione...</option>
-                            <option value="Claudia">Claudia</option>
-                            <option value="Rodrigo">Rodrigo</option>
-                            <option value="Mãe">Mãe</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="aportValue">Valor (R$)</label>
-                        <input type="number" id="aportValue" placeholder="0.00" step="0.01" min="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="aportDate">Data</label>
-                        <input type="date" id="aportDate">
-                    </div>
-
-                    <button onclick="addAport()">Registrar Aporte</button>
+            <div style="margin-bottom: 20px;">
+                <button onclick="openModal('aportModal')">+ Registrar Aporte</button>
+            </div>
+            <div class="balance-cards">
+                <div class="balance-card">
+                    <div class="balance-card-label">Claudia</div>
+                    <div class="balance-card-value" id="claudiaBalance">R$ 0,00</div>
                 </div>
-
-                <div class="card-section">
-                    <h2>Saldos por Pessoa</h2>
-                    <div class="balance-section">
-                        <div class="balance-card">
-                            <div class="balance-card-label">Claudia</div>
-                            <div class="balance-card-value" id="claudiaBalance">R$ 0,00</div>
-                        </div>
-                        <div class="balance-card">
-                            <div class="balance-card-label">Rodrigo</div>
-                            <div class="balance-card-value" id="rodrigoBalance">R$ 0,00</div>
-                        </div>
-                        <div class="balance-card">
-                            <div class="balance-card-label">Mãe</div>
-                            <div class="balance-card-value" id="maeBalance">R$ 0,00</div>
-                        </div>
-                    </div>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Pessoa</th>
-                                <th>Valor</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="aportTableBody">
-                            <tr><td colspan="4" style="text-align: center; color: #666;">Carregando...</td></tr>
-                        </tbody>
-                    </table>
+                <div class="balance-card">
+                    <div class="balance-card-label">Rodrigo</div>
+                    <div class="balance-card-value" id="rodrigoBalance">R$ 0,00</div>
                 </div>
+                <div class="balance-card">
+                    <div class="balance-card-label">Mãe</div>
+                    <div class="balance-card-value" id="maeBalance">R$ 0,00</div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Pessoa</th>
+                            <th>Valor</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aportTableBody">
+                        <tr><td colspan="4" style="text-align: center; color: #666;">Carregando...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- GASTOS TAB -->
         <div id="gastos" class="tab-content">
-            <div class="main-grid">
-                <div class="card-section">
-                    <h2>Registrar Gasto</h2>
-                    <div id="gastoAlert"></div>
-
-                    <div class="form-group">
-                        <label for="gastoDescription">Descrição</label>
-                        <input type="text" id="gastoDescription" placeholder="Ex: Reforma cozinha">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gastoCategory">Categoria</label>
-                        <select id="gastoCategory">
-                            <option value="">Selecione...</option>
-                            <option value="Reforma">Reforma</option>
-                            <option value="Acabamento">Acabamento</option>
-                            <option value="Entrada">Entrada</option>
-                            <option value="Vistoria">Vistoria</option>
-                            <option value="Taxas">Taxas</option>
-                            <option value="Outro">Outro</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gastoValue">Valor (R$)</label>
-                        <input type="number" id="gastoValue" placeholder="0.00" step="0.01" min="0">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gastoDate">Data</label>
-                        <input type="date" id="gastoDate">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="gastoPagamento">Forma de Pagamento</label>
-                        <select id="gastoPagamento">
-                            <option value="avista">À Vista</option>
-                            <option value="parcelado">Parcelado</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="parcelasGroup" style="display: none;">
-                        <label for="gastoParcelas">Número de Parcelas</label>
-                        <select id="gastoParcelas">
-                            <option value="">Selecione...</option>
-                            <option value="1">1x</option>
-                            <option value="2">2x</option>
-                            <option value="3">3x</option>
-                            <option value="4">4x</option>
-                            <option value="5">5x</option>
-                            <option value="6">6x</option>
-                            <option value="7">7x</option>
-                            <option value="8">8x</option>
-                            <option value="9">9x</option>
-                            <option value="10">10x</option>
-                            <option value="11">11x</option>
-                            <option value="12">12x</option>
-                            <option value="13">13x</option>
-                            <option value="14">14x</option>
-                            <option value="15">15x</option>
-                            <option value="16">16x</option>
-                            <option value="17">17x</option>
-                            <option value="18">18x</option>
-                            <option value="19">19x</option>
-                            <option value="20">20x</option>
-                            <option value="21">21x</option>
-                            <option value="22">22x</option>
-                            <option value="23">23x</option>
-                            <option value="24">24x</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group" id="dataPrimeiraGroup" style="display: none;">
-                        <label for="gastoDataPrimeira">Primeira Parcela</label>
-                        <select id="gastoDataPrimeira">
-                            <option value="">Selecione...</option>
-                            <option value="atual">Mês Atual</option>
-                            <option value="proximo">Mês Próximo</option>
-                        </select>
-                    </div>
-
-                    <button onclick="addGasto()">Registrar Gasto</button>
-                </div>
-
-                <div class="card-section">
-                    <h2>Gastos Realizados (2026)</h2>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Data</th>
-                                <th>Descrição</th>
-                                <th>Categoria</th>
-                                <th>Valor</th>
-                                <th>Ação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="gastoTableBody">
-                            <tr><td colspan="5" style="text-align: center; color: #666;">Carregando...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
+            <div style="margin-bottom: 20px;">
+                <button onclick="openModal('gastoModal')">+ Registrar Gasto</button>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Categoria</th>
+                            <th>Valor</th>
+                            <th>Tipo</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody id="gastoTableBody">
+                        <tr><td colspan="6" style="text-align: center; color: #666;">Carregando...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
         <!-- FINANCIAMENTO TAB -->
         <div id="financiamento" class="tab-content">
-            <div class="card-section" style="max-width: 600px; margin: 0 auto;">
-                <h2 style="border-bottom: 1px solid #2a3344; padding-bottom: 15px; margin-bottom: 25px;">Financiamento de R$ 250.000</h2>
-                
-                <div class="form-group">
-                    <label for="amortYear">Ano</label>
-                    <input type="number" id="amortYear" placeholder="2024" min="2024" max="2040">
-                </div>
-
-                <div class="form-group">
-                    <label for="amortValue">Valor Amortizado (R$)</label>
-                    <input type="number" id="amortValue" placeholder="0.00" step="0.01" min="0">
-                </div>
-
-                <button onclick="addAmortization()">Registrar Amortização</button>
-
-                <table style="margin-top: 30px;">
+            <div style="margin-bottom: 20px;">
+                <button onclick="openModal('amortModal')">+ Registrar Amortização</button>
+            </div>
+            <div class="table-container">
+                <table>
                     <thead>
                         <tr>
                             <th>Ano</th>
-                            <th>Valor Amortizado</th>
+                            <th>Valor</th>
                             <th>Saldo Devedor</th>
                             <th>Ação</th>
                         </tr>
@@ -588,10 +720,142 @@
         </div>
     </div>
 
+    <!-- MODAL APORTE -->
+    <div id="aportModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Aporte</h2>
+                <button class="modal-close" onclick="closeModal('aportModal')">✕</button>
+            </div>
+            <div id="aportAlert"></div>
+            <div class="form-group">
+                <label for="aportPerson">Pessoa</label>
+                <select id="aportPerson">
+                    <option value="">Selecione...</option>
+                    <option value="Claudia">Claudia</option>
+                    <option value="Rodrigo">Rodrigo</option>
+                    <option value="Mãe">Mãe</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="aportValue">Valor (R$)</label>
+                <input type="number" id="aportValue" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="aportDate">Data</label>
+                <input type="date" id="aportDate">
+            </div>
+            <button onclick="addAport()" style="width: 100%;">Registrar Aporte</button>
+        </div>
+    </div>
+
+    <!-- MODAL GASTO -->
+    <div id="gastoModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Gasto</h2>
+                <button class="modal-close" onclick="closeModal('gastoModal')">✕</button>
+            </div>
+            <div id="gastoAlert"></div>
+            <div class="form-group">
+                <label for="gastoDescription">Descrição</label>
+                <input type="text" id="gastoDescription" placeholder="Ex: Reforma cozinha">
+            </div>
+            <div class="form-group">
+                <label for="gastoCategory">Categoria</label>
+                <select id="gastoCategory">
+                    <option value="">Selecione...</option>
+                    <option value="Reforma">Reforma</option>
+                    <option value="Acabamento">Acabamento</option>
+                    <option value="Entrada">Entrada</option>
+                    <option value="Vistoria">Vistoria</option>
+                    <option value="Taxas">Taxas</option>
+                    <option value="Outro">Outro</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="gastoValue">Valor (R$)</label>
+                <input type="number" id="gastoValue" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="gastoDate">Data</label>
+                <input type="date" id="gastoDate">
+            </div>
+            <div class="form-group">
+                <label for="gastoPagamento">Forma de Pagamento</label>
+                <select id="gastoPagamento">
+                    <option value="avista">À Vista</option>
+                    <option value="parcelado">Parcelado</option>
+                </select>
+            </div>
+            <div class="form-group" id="parcelasGroup" style="display: none;">
+                <label for="gastoParcelas">Número de Parcelas</label>
+                <select id="gastoParcelas">
+                    <option value="">Selecione...</option>
+                    <option value="1">1x</option>
+                    <option value="2">2x</option>
+                    <option value="3">3x</option>
+                    <option value="4">4x</option>
+                    <option value="5">5x</option>
+                    <option value="6">6x</option>
+                    <option value="7">7x</option>
+                    <option value="8">8x</option>
+                    <option value="9">9x</option>
+                    <option value="10">10x</option>
+                    <option value="11">11x</option>
+                    <option value="12">12x</option>
+                    <option value="13">13x</option>
+                    <option value="14">14x</option>
+                    <option value="15">15x</option>
+                    <option value="16">16x</option>
+                    <option value="17">17x</option>
+                    <option value="18">18x</option>
+                    <option value="19">19x</option>
+                    <option value="20">20x</option>
+                    <option value="21">21x</option>
+                    <option value="22">22x</option>
+                    <option value="23">23x</option>
+                    <option value="24">24x</option>
+                </select>
+            </div>
+            <div class="form-group" id="dataPrimeiraGroup" style="display: none;">
+                <label for="gastoDataPrimeira">Primeira Parcela</label>
+                <select id="gastoDataPrimeira">
+                    <option value="">Selecione...</option>
+                    <option value="atual">Mês Atual</option>
+                    <option value="proximo">Mês Próximo</option>
+                </select>
+            </div>
+            <button onclick="addGasto()" style="width: 100%;">Registrar Gasto</button>
+        </div>
+    </div>
+
+    <!-- MODAL FINANCIAMENTO -->
+    <div id="amortModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Registrar Amortização</h2>
+                <button class="modal-close" onclick="closeModal('amortModal')">✕</button>
+            </div>
+            <div class="form-group">
+                <label for="amortYear">Ano</label>
+                <input type="number" id="amortYear" min="2026" placeholder="2026">
+            </div>
+            <div class="form-group">
+                <label for="amortValue">Valor Amortizado (R$)</label>
+                <input type="number" id="amortValue" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="amortSaldoDevedor">Saldo Devedor (R$)</label>
+                <input type="number" id="amortSaldoDevedor" placeholder="0.00" step="0.01" min="0">
+            </div>
+            <button onclick="addAmortization()" style="width: 100%;">Registrar Amortização</button>
+        </div>
+    </div>
+
     <script>
-        const SHEET_ID = '1-TdoF2JaIBHXGFySJfIA3c9vEVEuMOaE_SJtnesU0A8';
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEOFeZEjDB1g7u4gJU2Nu0IYM6wZ8cFRUPIk8chQ-c8b4xstqEDqsE11PZV13glxB0/exec';
-        
+
         let data = {
             aportes: [],
             gastos: [],
@@ -600,86 +864,72 @@
 
         const today = new Date().toISOString().split('T')[0];
 
-        // Initialize
-        document.getElementById('aportDate').value = today;
-        document.getElementById('gastoDate').value = today;
-        document.getElementById('amortYear').value = new Date().getFullYear();
-
-        // Load data from Apps Script
-        async function loadData() {
-            try {
-                updateSyncStatus('loading', 'Sincronizando...');
-                
-                const formData = new FormData();
-                formData.append('action', 'getData');
-                
-                const response = await fetch(APPS_SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                
-                const result = await response.json();
-                
-                data.aportes = result.aportes || [];
-                data.gastos = result.gastos || [];
-                data.amortizacoes = result.amortizacoes || [];
-                
-                updateUI();
-                updateSyncStatus('success', '✓ Sincronizado');
-            } catch (error) {
-                console.error('Erro ao carregar:', error);
-                updateSyncStatus('error', '✗ Erro na sincronização');
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            if (modalId === 'gastoModal') {
+                document.getElementById('gastoDate').value = today;
+            } else if (modalId === 'aportModal') {
+                document.getElementById('aportDate').value = today;
+            } else if (modalId === 'amortModal') {
+                document.getElementById('amortYear').value = new Date().getFullYear();
             }
         }
 
-        async function addAport() {
-            const person = document.getElementById('aportPerson').value;
-            const value = parseFloat(document.getElementById('aportValue').value);
-            const date = document.getElementById('aportDate').value;
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
 
-            const alertDiv = document.getElementById('aportAlert');
-
-            if (!person || !value || !date) {
-                showAlert(alertDiv, 'Preencha todos os campos', 'error');
-                return;
+        window.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.remove('active');
             }
+        });
 
-            if (value <= 0) {
-                showAlert(alertDiv, 'O valor deve ser maior que zero', 'error');
-                return;
-            }
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
 
-            try {
-                updateSyncStatus('loading', 'Salvando...');
-                
-                const formData = new FormData();
-                formData.append('action', 'addAport');
-                formData.append('date', date);
-                formData.append('person', person);
-                formData.append('value', value);
-                
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
-                
-                await new Promise(r => setTimeout(r, 1000));
-                await loadData();
-                
-                document.getElementById('aportPerson').value = '';
-                document.getElementById('aportValue').value = '';
-                document.getElementById('aportDate').value = today;
-                
-                showAlert(alertDiv, 'Aporte registrado com sucesso!', 'success');
-                setTimeout(() => { alertDiv.innerHTML = ''; }, 3000);
-            } catch (error) {
-                console.error(error);
-                showAlert(alertDiv, 'Erro ao salvar aporte', 'error');
+        function cleanDate(dateStr) {
+            if (!dateStr) return '';
+            return String(dateStr).split('T')[0];
+        }
+
+        function cleanCurrency(value) {
+            if (!value) return 0;
+            return parseFloat(String(value).replace(/R\$\s?/g, '').replace(/\./g, '').replace(/,/, '.'));
+        }
+
+        function formatCurrency(value) {
+            return 'R$ ' + parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            if (typeof dateStr === 'number') {
+                const date = new Date((dateStr - 25569) * 86400 * 1000);
+                return date.toLocaleDateString('pt-BR');
             }
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}/${y}`;
+        }
+
+        function showAlert(alertDiv, message, type) {
+            alertDiv.innerHTML = `<div class="alert ${type}">${message}</div>`;
+        }
+
+        function updateSyncStatus(type, message) {
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `sync-status ${type}`;
         }
 
         function getFirstParcelDate(monthChoice) {
             const today = new Date();
             const currentYear = today.getFullYear();
             const currentMonth = today.getMonth();
-            
             if (monthChoice === 'atual') {
                 return new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
             } else if (monthChoice === 'proximo') {
@@ -692,7 +942,6 @@
             const pagamento = document.getElementById('gastoPagamento').value;
             const parcelasGroup = document.getElementById('parcelasGroup');
             const dataPrimeiraGroup = document.getElementById('dataPrimeiraGroup');
-            
             if (pagamento === 'parcelado') {
                 parcelasGroup.style.display = 'block';
                 dataPrimeiraGroup.style.display = 'block';
@@ -702,284 +951,100 @@
             }
         }
 
-        async function addGasto() {
-            const description = document.getElementById('gastoDescription').value;
-            const category = document.getElementById('gastoCategory').value;
-            const value = parseFloat(document.getElementById('gastoValue').value);
-            const date = document.getElementById('gastoDate').value;
-            const pagamento = document.getElementById('gastoPagamento').value;
-            
-            const alertDiv = document.getElementById('gastoAlert');
-
-            if (!description || !category || !value || !date) {
-                showAlert(alertDiv, 'Preencha todos os campos', 'error');
-                return;
-            }
-
-            if (value <= 0) {
-                showAlert(alertDiv, 'O valor deve ser maior que zero', 'error');
-                return;
-            }
-
-            // Se for parcelado, validar campos adicionais
-            let parcelas = 1;
-            let dataPrimeira = date;
-            
-            if (pagamento === 'parcelado') {
-                const parcelasSelect = document.getElementById('gastoParcelas').value;
-                const dataPrimeiraSelect = document.getElementById('gastoDataPrimeira').value;
-                
-                if (!parcelasSelect || !dataPrimeiraSelect) {
-                    showAlert(alertDiv, 'Preencha número de parcelas e data da primeira parcela', 'error');
-                    return;
-                }
-                
-                parcelas = parseInt(parcelasSelect);
-                dataPrimeira = getFirstParcelDate(dataPrimeiraSelect);
-            }
-
-            try {
-                updateSyncStatus('loading', 'Salvando...');
-                
-                const formData = new FormData();
-                formData.append('action', 'addGasto');
-                formData.append('date', date);
-                formData.append('description', description);
-                formData.append('category', category);
-                formData.append('value', value);
-                formData.append('pagamento', pagamento === 'parcelado' ? 'Parcelado' : 'À Vista');
-                formData.append('parcelas', parcelas);
-                formData.append('dataPrimeira', dataPrimeira);
-                
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
-                
-                await new Promise(r => setTimeout(r, 1000));
-                await loadData();
-                
-                document.getElementById('gastoDescription').value = '';
-                document.getElementById('gastoCategory').value = '';
-                document.getElementById('gastoValue').value = '';
-                document.getElementById('gastoDate').value = today;
-                document.getElementById('gastoPagamento').value = 'avista';
-                document.getElementById('gastoParcelas').value = '';
-                document.getElementById('gastoDataPrimeira').value = '';
-                toggleParcelaFields();
-                
-                showAlert(alertDiv, 'Gasto registrado com sucesso!', 'success');
-                setTimeout(() => { alertDiv.innerHTML = ''; }, 3000);
-            } catch (error) {
-                console.error(error);
-                showAlert(alertDiv, 'Erro ao salvar gasto', 'error');
-            }
-        }
-
-        async function addAmortization() {
-            const year = document.getElementById('amortYear').value;
-            const value = parseFloat(document.getElementById('amortValue').value);
-
-            if (!year || !value || value <= 0) {
-                alert('Preencha corretamente');
-                return;
-            }
-
-            try {
-                updateSyncStatus('loading', 'Salvando...');
-                const saldoDevedor = (250000 - value).toFixed(2);
-                
-                const formData = new FormData();
-                formData.append('action', 'addAmortization');
-                formData.append('year', year);
-                formData.append('value', value);
-                formData.append('saldoDevedor', saldoDevedor);
-                
-                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
-                
-                await new Promise(r => setTimeout(r, 1000));
-                await loadData();
-                
-                document.getElementById('amortValue').value = '';
-                document.getElementById('amortYear').value = new Date().getFullYear();
-                
-                alert('✓ Amortização registrada');
-            } catch (error) {
-                console.error(error);
-                alert('Erro ao salvar');
-            }
-        }
-
         function getParceledAmountUntilToday(dataPrimeira, parcelas, valorTotal) {
-            // Calcula quantas parcelas já venceram até hoje
-            if (!dataPrimeira || parcelas <= 1) {
-                return valorTotal; // À vista ou 1x
-            }
-
+            if (!dataPrimeira || parcelas <= 1) return valorTotal;
             const hoje = new Date();
             const hoje_year = hoje.getFullYear();
-            const hoje_month = hoje.getMonth(); // 0-11
-
-            // Parsear data primeira (YYYY-MM-DD)
+            const hoje_month = hoje.getMonth();
             const [year, month, day] = dataPrimeira.split('-').map(Number);
             const primeira_year = year;
-            const primeira_month = month - 1; // Converter pra 0-11
-
-            // Calcular quantos meses passaram desde a primeira parcela até hoje
+            const primeira_month = month - 1;
             const meses_passados = (hoje_year - primeira_year) * 12 + (hoje_month - primeira_month);
-
-            // Se ainda não chegou na primeira parcela, não desconta nada
-            if (meses_passados < 0) {
-                return 0;
-            }
-
-            // Quantas parcelas já venceram (mínimo 1 se chegou na data, máximo = parcelas)
+            if (meses_passados < 0) return 0;
             const parcelas_vencidas = Math.min(meses_passados + 1, parcelas);
-
             const valor_parcela = valorTotal / parcelas;
             return valor_parcela * parcelas_vencidas;
         }
 
-        function cleanDate(dateStr) {
-            if (!dateStr) return '';
-            // Extrai apenas YYYY-MM-DD de formatos como "2026-08-26T03:00:00.000Z"
-            return String(dateStr).split('T')[0];
-        }
-
-        function cleanCurrency(value) {
-            if (!value) return 0;
-            // Remove "R$", pontos de milhar e converte vírgula decimal
-            return parseFloat(String(value).replace(/R\$\s?/g, '').replace(/\./g, '').replace(/,/, '.'));
-        }
-
-        function formatCurrency(value) {
-            return 'R$ ' + parseFloat(value).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            
-            // Se for número (timestamp do Google Sheets)
-            if (typeof dateStr === 'number') {
-                const date = new Date((dateStr - 25569) * 86400 * 1000);
-                return date.toLocaleDateString('pt-BR');
+        async function loadData() {
+            try {
+                updateSyncStatus('loading', 'Sincronizando...');
+                const formData = new FormData();
+                formData.append('action', 'getData');
+                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                const result = await response.json();
+                data.aportes = result.aportes || [];
+                data.gastos = result.gastos || [];
+                data.amortizacoes = result.amortizacoes || [];
+                updateUI();
+                updateSyncStatus('success', 'Sincronizado');
+                setTimeout(() => {
+                    document.getElementById('syncStatus').textContent = 'Pronto';
+                    document.getElementById('syncStatus').className = 'sync-status';
+                }, 2000);
+            } catch (error) {
+                console.error(error);
+                updateSyncStatus('error', 'Erro na sincronização');
             }
-            
-            // Se for string de data (YYYY-MM-DD)
-            if (typeof dateStr === 'string') {
-                if (dateStr.includes('/')) {
-                    return dateStr; // Já está formatada
-                }
-                const date = new Date(dateStr + 'T00:00:00');
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleDateString('pt-BR');
-                }
-            }
-            
-            return '';
         }
 
         function calculatePropertyValueAtYear(year) {
-            // Calcula quanto o imóvel valia em 31/12 do ano escolhido
-            const baseValue = 250000; // Financiamento
-            
-            const yearEnd = `${year}-12-31`;
-            
-            // Soma gastos que já venceram até 31/12 do ano
+            const baseValue = 250000;
             const gastoAteAno = data.gastos.reduce((sum, g) => {
                 const valor = cleanCurrency(g['Valor']);
                 const parcelas = parseInt(g['Parcelas']) || 1;
                 const dataPrimeira = g['Data Primeira Parcela'] || g['Data'];
-                
-                // Calcular quantas parcelas venceram até 31/12 do ano escolhido
                 if (!dataPrimeira) return sum;
-                
                 const [d_year, d_month, d_day] = dataPrimeira.split('-').map(Number);
                 const d_primeira = new Date(d_year, d_month - 1, 1);
-                const d_fim = new Date(year, 11, 31); // 31/12 do ano
-                
-                if (d_primeira > d_fim) {
-                    // Primeira parcela ainda não venceu nesse ano
-                    return sum;
-                }
-                
-                // Calcular meses entre primeira parcela e fim do ano
+                const d_fim = new Date(year, 11, 31);
+                if (d_primeira > d_fim) return sum;
                 const meses = (d_fim.getFullYear() - d_primeira.getFullYear()) * 12 + (d_fim.getMonth() - d_primeira.getMonth()) + 1;
                 const parcelas_vencidas = Math.min(meses, parcelas);
                 const valor_parcela = valor / parcelas;
-                
                 return sum + (valor_parcela * parcelas_vencidas);
             }, 0);
-            
             return baseValue + gastoAteAno;
         }
 
-        // Event listener para dropdown de Declaração de Bens
-        document.addEventListener('DOMContentLoaded', function() {
-            const declaracaoAnoSelect = document.getElementById('declaracaoAno');
-            if (declaracaoAnoSelect) {
-                declaracaoAnoSelect.addEventListener('change', function() {
-                    if (this.value) {
-                        const valor = calculatePropertyValueAtYear(parseInt(this.value));
-                        document.getElementById('declaracaoValor').textContent = formatCurrency(valor);
-                    } else {
-                        document.getElementById('declaracaoValor').textContent = 'R$ 0,00';
-                    }
-                });
-            }
-        });
-
         function calculateTotals() {
-            const claudiaAport = data.aportes
-                .filter(a => a['Pessoa'] === 'Claudia')
-                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
-            
-            const rodrigoAport = data.aportes
-                .filter(a => a['Pessoa'] === 'Rodrigo')
-                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
-            
-            const maeAport = data.aportes
-                .filter(a => a['Pessoa'] === 'Mãe')
-                .reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
-            
+            const claudiaAport = data.aportes.filter(a => a['Pessoa'] === 'Claudia').reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
+            const rodrigoAport = data.aportes.filter(a => a['Pessoa'] === 'Rodrigo').reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
+            const maeAport = data.aportes.filter(a => a['Pessoa'] === 'Mãe').reduce((sum, a) => sum + cleanCurrency(a['Valor']), 0);
             const totalAport = claudiaAport + rodrigoAport + maeAport;
-            
-            // Calcula gastos considerando parcelas
             const totalGasto = data.gastos.reduce((sum, g) => {
                 const valor = cleanCurrency(g['Valor']);
                 const parcelas = parseInt(g['Parcelas']) || 1;
                 const dataPrimeira = g['Data Primeira Parcela'] || g['Data'];
-                
-                // Desconta apenas o que já venceu
                 const gastoVencido = getParceledAmountUntilToday(dataPrimeira, parcelas, valor);
                 return sum + gastoVencido;
             }, 0);
-            
-            // Mantém totalGasto2026 pra compatibilidade (agora é o total até hoje)
             const totalGasto2026 = totalGasto;
-            
             return { claudiaAport, rodrigoAport, maeAport, totalAport, totalGasto2026 };
         }
 
         function updateUI() {
             const totals = calculateTotals();
-
             document.getElementById('claudiaBalance').textContent = formatCurrency(totals.claudiaAport);
             document.getElementById('rodrigoBalance').textContent = formatCurrency(totals.rodrigoAport);
             document.getElementById('maeBalance').textContent = formatCurrency(totals.maeAport);
-
             document.getElementById('dashTotalAport').textContent = formatCurrency(totals.totalAport);
             document.getElementById('dashTotalGasto2026').textContent = formatCurrency(totals.totalGasto2026);
             document.getElementById('dashClaudia').textContent = formatCurrency(totals.claudiaAport);
             document.getElementById('dashRodrigo').textContent = formatCurrency(totals.rodrigoAport);
             document.getElementById('dashMae').textContent = formatCurrency(totals.maeAport);
-
             const saldo = totals.totalAport - totals.totalGasto2026;
             const saldoElement = document.getElementById('dashSaldo');
             saldoElement.textContent = formatCurrency(saldo);
             saldoElement.className = 'card-value ' + (saldo >= 0 ? 'positive' : 'negative');
-
-            const valorImovel = 250000 + totals.totalGasto2026;
-            document.getElementById('dashValorTotal').textContent = formatCurrency(valorImovel);
-
-            // Update tables
+            const valorTotal = 250000 + totals.totalGasto2026;
+            document.getElementById('dashValorTotal').textContent = formatCurrency(valorTotal);
+            let saldoDevedor = 250000;
+            if (data.amortizacoes && data.amortizacoes.length > 0) {
+                const lastAmort = data.amortizacoes[data.amortizacoes.length - 1];
+                saldoDevedor = cleanCurrency(lastAmort['Saldo Devedor']) || 250000;
+            }
+            document.getElementById('dashSaldoDevedor').textContent = formatCurrency(saldoDevedor);
             updateAportTable();
             updateGastoTable();
             updateAmortTable();
@@ -991,36 +1056,19 @@
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666;">Nenhum aporte registrado</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = data.aportes
-                .map(a => `
-                    <tr>
-                        <td>${cleanDate(a['Data'])}</td>
-                        <td>${a['Pessoa'] || ''}</td>
-                        <td>${formatCurrency(cleanCurrency(a['Valor']))}</td>
-                        <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
-                    </tr>
-                `).join('');
+            tbody.innerHTML = data.aportes.map((a, idx) => `<tr><td>${formatDate(a['Data'])}</td><td>${a['Pessoa']}</td><td>${formatCurrency(cleanCurrency(a['Valor']))}</td><td><button class="delete-btn" onclick="deleteAport(${idx})">Remover</button></td></tr>`).join('');
         }
 
         function updateGastoTable() {
             const tbody = document.getElementById('gastoTableBody');
             if (data.gastos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: #666;">Nenhum gasto registrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #666;">Nenhum gasto registrado</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = data.gastos
-                .filter(g => g['Data'])
-                .map(g => `
-                    <tr>
-                        <td>${cleanDate(g['Data'])}</td>
-                        <td>${g['Descrição'] || ''}</td>
-                        <td>${g['Categoria'] || ''}</td>
-                        <td>${formatCurrency(cleanCurrency(g['Valor']))}</td>
-                        <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
-                    </tr>
-                `).join('');
+            tbody.innerHTML = data.gastos.map((g, idx) => {
+                const tipo = parseInt(g['Parcelas']) > 1 ? `${g['Parcelas']}x` : 'À Vista';
+                return `<tr><td>${formatDate(g['Data'])}</td><td>${g['Descrição']}</td><td>${g['Categoria']}</td><td>${formatCurrency(cleanCurrency(g['Valor']))}</td><td>${tipo}</td><td><button class="delete-btn" onclick="deleteGasto(${idx})">Remover</button></td></tr>`;
+            }).join('');
         }
 
         function updateAmortTable() {
@@ -1029,40 +1077,162 @@
                 tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #666;">Nenhuma amortização registrada</td></tr>';
                 return;
             }
-
-            tbody.innerHTML = data.amortizacoes
-                .sort((a, b) => parseInt(b['Ano']) - parseInt(a['Ano']))
-                .map(a => `
-                    <tr>
-                        <td>${a['Ano'] || ''}</td>
-                        <td>${formatCurrency(cleanCurrency(a['Valor']))}</td>
-                        <td>${formatCurrency(cleanCurrency(a['Saldo Devedor']))}</td>
-                        <td><button class="btn-small" onclick="alert('Remover via Google Sheets')">Remover</button></td>
-                    </tr>
-                `).join('');
+            tbody.innerHTML = data.amortizacoes.map((a, idx) => `<tr><td>${a['Ano']}</td><td>${formatCurrency(cleanCurrency(a['Valor']))}</td><td>${formatCurrency(cleanCurrency(a['Saldo Devedor']))}</td><td><button class="delete-btn" onclick="deleteAmort(${idx})">Remover</button></td></tr>`).join('');
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+        async function addAport() {
+            const person = document.getElementById('aportPerson').value;
+            const value = parseFloat(document.getElementById('aportValue').value);
+            const date = document.getElementById('aportDate').value;
+            const alertDiv = document.getElementById('aportAlert');
+            if (!person || !value || !date) {
+                showAlert(alertDiv, 'Preencha todos os campos', 'error');
+                return;
+            }
+            if (value <= 0) {
+                showAlert(alertDiv, 'O valor deve ser maior que zero', 'error');
+                return;
+            }
+            try {
+                updateSyncStatus('loading', 'Salvando...');
+                const formData = new FormData();
+                formData.append('action', 'addAport');
+                formData.append('date', date);
+                formData.append('person', person);
+                formData.append('value', value);
+                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await new Promise(r => setTimeout(r, 1000));
+                await loadData();
+                document.getElementById('aportPerson').value = '';
+                document.getElementById('aportValue').value = '';
+                document.getElementById('aportDate').value = today;
+                closeModal('aportModal');
+                showAlert(alertDiv, 'Aporte registrado com sucesso!', 'success');
+                setTimeout(() => { alertDiv.innerHTML = ''; }, 3000);
+            } catch (error) {
+                console.error(error);
+                showAlert(alertDiv, 'Erro ao salvar aporte', 'error');
+            }
         }
 
-        function showAlert(element, message, type) {
-            element.innerHTML = `<div class="alert ${type}">${message}</div>`;
+        async function addGasto() {
+            const description = document.getElementById('gastoDescription').value;
+            const category = document.getElementById('gastoCategory').value;
+            const value = parseFloat(document.getElementById('gastoValue').value);
+            const date = document.getElementById('gastoDate').value;
+            const pagamento = document.getElementById('gastoPagamento').value;
+            const alertDiv = document.getElementById('gastoAlert');
+            if (!description || !category || !value || !date) {
+                showAlert(alertDiv, 'Preencha todos os campos', 'error');
+                return;
+            }
+            if (value <= 0) {
+                showAlert(alertDiv, 'O valor deve ser maior que zero', 'error');
+                return;
+            }
+            let parcelas = 1;
+            let dataPrimeira = date;
+            if (pagamento === 'parcelado') {
+                const parcelasSelect = document.getElementById('gastoParcelas').value;
+                const dataPrimeiraSelect = document.getElementById('gastoDataPrimeira').value;
+                if (!parcelasSelect || !dataPrimeiraSelect) {
+                    showAlert(alertDiv, 'Preencha número de parcelas e data da primeira parcela', 'error');
+                    return;
+                }
+                parcelas = parseInt(parcelasSelect);
+                dataPrimeira = getFirstParcelDate(dataPrimeiraSelect);
+            }
+            try {
+                updateSyncStatus('loading', 'Salvando...');
+                const formData = new FormData();
+                formData.append('action', 'addGasto');
+                formData.append('date', date);
+                formData.append('description', description);
+                formData.append('category', category);
+                formData.append('value', value);
+                formData.append('pagamento', pagamento === 'parcelado' ? 'Parcelado' : 'À Vista');
+                formData.append('parcelas', parcelas);
+                formData.append('dataPrimeira', dataPrimeira);
+                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await new Promise(r => setTimeout(r, 1000));
+                await loadData();
+                document.getElementById('gastoDescription').value = '';
+                document.getElementById('gastoCategory').value = '';
+                document.getElementById('gastoValue').value = '';
+                document.getElementById('gastoDate').value = today;
+                document.getElementById('gastoPagamento').value = 'avista';
+                document.getElementById('gastoParcelas').value = '';
+                document.getElementById('gastoDataPrimeira').value = '';
+                toggleParcelaFields();
+                closeModal('gastoModal');
+                showAlert(alertDiv, 'Gasto registrado com sucesso!', 'success');
+                setTimeout(() => { alertDiv.innerHTML = ''; }, 3000);
+            } catch (error) {
+                console.error(error);
+                showAlert(alertDiv, 'Erro ao salvar gasto', 'error');
+            }
         }
 
-        function updateSyncStatus(type, message) {
-            const status = document.getElementById('syncStatus');
-            status.textContent = message;
-            status.className = 'sync-status ' + type;
+        async function addAmortization() {
+            const year = document.getElementById('amortYear').value;
+            const value = parseFloat(document.getElementById('amortValue').value);
+            const saldoDevedor = parseFloat(document.getElementById('amortSaldoDevedor').value);
+            if (!year || !value || !saldoDevedor) {
+                alert('Preencha todos os campos');
+                return;
+            }
+            try {
+                updateSyncStatus('loading', 'Salvando...');
+                const formData = new FormData();
+                formData.append('action', 'addAmortization');
+                formData.append('year', year);
+                formData.append('value', value);
+                formData.append('saldoDevedor', saldoDevedor);
+                await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
+                await new Promise(r => setTimeout(r, 1000));
+                await loadData();
+                document.getElementById('amortValue').value = '';
+                document.getElementById('amortYear').value = new Date().getFullYear();
+                document.getElementById('amortSaldoDevedor').value = '';
+                closeModal('amortModal');
+                alert('✓ Amortização registrada');
+            } catch (error) {
+                console.error(error);
+                alert('Erro ao salvar');
+            }
         }
 
-        // Adicionar event listener para mostrar/esconder campos de parcela
         document.getElementById('gastoPagamento').addEventListener('change', toggleParcelaFields);
+        document.getElementById('declaracaoAno').addEventListener('change', function() {
+            if (this.value) {
+                const valor = calculatePropertyValueAtYear(parseInt(this.value));
+                document.getElementById('declaracaoValor').textContent = formatCurrency(valor);
+            } else {
+                document.getElementById('declaracaoValor').textContent = 'R$ 250.000,00';
+            }
+        });
 
-        // Load on start only
+        function deleteAport(idx) {
+            if (confirm('Remover este aporte?')) {
+                data.aportes.splice(idx, 1);
+                updateUI();
+            }
+        }
+
+        function deleteGasto(idx) {
+            if (confirm('Remover este gasto?')) {
+                data.gastos.splice(idx, 1);
+                updateUI();
+            }
+        }
+
+        function deleteAmort(idx) {
+            if (confirm('Remover esta amortização?')) {
+                data.amortizacoes.splice(idx, 1);
+                updateUI();
+            }
+        }
+
         loadData();
     </script>
 </body>
