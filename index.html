@@ -854,7 +854,7 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEOFeZEjDB1g7u4gJU2Nu0IYM6wZ8cFRUPIk8chQ-c8b4xstqEDqsE11PZV13glxB0/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywOF6vSgJ-by1GxdETY9f1mmndMdN4o-YeE--VPyhRbel9c1XNfntlWSZYnscKY0Kv/exec';
 
         let data = {
             aportes: [],
@@ -908,12 +908,37 @@
 
         function formatDate(dateStr) {
             if (!dateStr) return '';
+            
+            // Se for número (serial do Google Sheets)
             if (typeof dateStr === 'number') {
                 const date = new Date((dateStr - 25569) * 86400 * 1000);
                 return date.toLocaleDateString('pt-BR');
             }
-            const [y, m, d] = dateStr.split('-');
-            return `${d}/${m}/${y}`;
+            
+            dateStr = String(dateStr).trim();
+            
+            // Se já estiver formatado como DD/MM/YYYY
+            if (dateStr.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+                return dateStr;
+            }
+            
+            // Se for ISO (YYYY-MM-DD)
+            if (dateStr.match(/^\d{4}-\d{2}-\d{2}/)) {
+                const [y, m, d] = dateStr.split('-');
+                return `${d}/${m}/${y}`;
+            }
+            
+            // Se for timestamp ISO bagunçado tipo "26T03:00:00.000Z/08/2026"
+            if (dateStr.includes('T') && dateStr.includes('Z')) {
+                try {
+                    const date = new Date(dateStr.split('/')[0]);
+                    return date.toLocaleDateString('pt-BR');
+                } catch (e) {
+                    return dateStr;
+                }
+            }
+            
+            return dateStr;
         }
 
         function showAlert(alertDiv, message, type) {
