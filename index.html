@@ -480,16 +480,20 @@
                 const text = await response.text();
                 
                 // Remove prefixo de segurança do Google
-                const json = text.replace(/\/\/.*\n/, '').replace(/^google\.setOnLoadCallback\(/, '').replace(/\);?$/, '');
+                const json = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
                 const data = JSON.parse(json);
                 
                 if (!data.table || !data.table.rows) return [];
                 
-                const headers = data.table.cols.map(col => col.label);
+                const headers = data.table.cols.map(col => {
+                    // remove espacos sobrando e aceita "Data Primeira" como "Data Primeira Parcela"
+                    const label = (col.label || '').trim();
+                    return label === 'Data Primeira' ? 'Data Primeira Parcela' : label;
+                });
                 const rows = data.table.rows.map(row => {
                     const obj = {};
                     headers.forEach((header, index) => {
-                        obj[header] = row.c[index] ? row.c[index].v : '';
+                        obj[header] = row.c[index] ? normalizeCell(row.c[index].v) : '';
                     });
                     return obj;
                 });
@@ -505,14 +509,25 @@
             return 'R$ ' + parseFloat(value || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        function normalizeCell(v) {
+            if (v === null || v === undefined) return '';
+            if (typeof v !== 'string') return v;
+            // Datas do Google Sheets (gviz): "Date(2026,7,26)" -> mes vem base 0
+            const g = v.match(/^Date\((\d{4}),(\d{1,2}),(\d{1,2})/);
+            if (g) return g[1] + '-' + String(+g[2] + 1).padStart(2, '0') + '-' + String(+g[3]).padStart(2, '0');
+            // Texto no formato DD/MM/AAAA -> AAAA-MM-DD
+            const br = v.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+            if (br) return br[3] + '-' + br[2].padStart(2, '0') + '-' + br[1].padStart(2, '0');
+            return v;
+        }
+
         function formatDate(dateStr) {
             if (!dateStr) return '';
-            try {
-                const date = new Date(dateStr);
-                return date.toLocaleDateString('pt-BR');
-            } catch (e) {
-                return dateStr;
-            }
+            const s = String(normalizeCell(dateStr)).trim();
+            // AAAA-MM-DD (com ou sem hora): formata na mao para nao sofrer deslocamento de fuso
+            const iso = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (iso) return iso[3] + '/' + iso[2] + '/' + iso[1];
+            return s;
         }
 
         function updateSyncStatus(type, message) {
