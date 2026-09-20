@@ -355,6 +355,28 @@
             </div>
         </div>
 
+        <!-- DECLARAÇÃO DE BENS -->
+        <div style="margin-top: 40px; padding: 30px; background: #1a1f2e; border: 1px solid #2a3344; border-radius: 8px;">
+            <h2 style="color: #c89d5c; font-size: 18px; font-weight: 300; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #2a3344; letter-spacing: 1px;">Declaração de Bens</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center;">
+                <div class="form-group" style="margin: 0;">
+                    <label for="declaracaoAno">Escolha o Ano</label>
+                    <select id="declaracaoAno">
+                        <option value="">Selecione...</option>
+                        <option value="2026">2026</option>
+                        <option value="2027">2027</option>
+                        <option value="2028">2028</option>
+                        <option value="2029">2029</option>
+                        <option value="2030">2030</option>
+                    </select>
+                </div>
+                <div style="text-align: right;">
+                    <div style="color: #aaa; font-size: 12px; margin-bottom: 8px;">Valor do Imóvel em 31/12</div>
+                    <div id="declaracaoValor" style="font-size: 24px; color: #c89d5c; font-weight: 600;">R$ 0,00</div>
+                </div>
+            </div>
+        </div>
+
         <!-- TABS -->
         <div class="tabs">
             <button class="tab-btn active" onclick="switchTab('aportes')">Aportes</button>
@@ -466,6 +488,46 @@
                         <select id="gastoPagamento">
                             <option value="avista">À Vista</option>
                             <option value="parcelado">Parcelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="parcelasGroup" style="display: none;">
+                        <label for="gastoParcelas">Número de Parcelas</label>
+                        <select id="gastoParcelas">
+                            <option value="">Selecione...</option>
+                            <option value="1">1x</option>
+                            <option value="2">2x</option>
+                            <option value="3">3x</option>
+                            <option value="4">4x</option>
+                            <option value="5">5x</option>
+                            <option value="6">6x</option>
+                            <option value="7">7x</option>
+                            <option value="8">8x</option>
+                            <option value="9">9x</option>
+                            <option value="10">10x</option>
+                            <option value="11">11x</option>
+                            <option value="12">12x</option>
+                            <option value="13">13x</option>
+                            <option value="14">14x</option>
+                            <option value="15">15x</option>
+                            <option value="16">16x</option>
+                            <option value="17">17x</option>
+                            <option value="18">18x</option>
+                            <option value="19">19x</option>
+                            <option value="20">20x</option>
+                            <option value="21">21x</option>
+                            <option value="22">22x</option>
+                            <option value="23">23x</option>
+                            <option value="24">24x</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="dataPrimeiraGroup" style="display: none;">
+                        <label for="gastoDataPrimeira">Primeira Parcela</label>
+                        <select id="gastoDataPrimeira">
+                            <option value="">Selecione...</option>
+                            <option value="atual">Mês Atual</option>
+                            <option value="proximo">Mês Próximo</option>
                         </select>
                     </div>
 
@@ -613,12 +675,40 @@
             }
         }
 
+        function getFirstParcelDate(monthChoice) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth();
+            
+            if (monthChoice === 'atual') {
+                return new Date(currentYear, currentMonth, 1).toISOString().split('T')[0];
+            } else if (monthChoice === 'proximo') {
+                return new Date(currentYear, currentMonth + 1, 1).toISOString().split('T')[0];
+            }
+            return '';
+        }
+
+        function toggleParcelaFields() {
+            const pagamento = document.getElementById('gastoPagamento').value;
+            const parcelasGroup = document.getElementById('parcelasGroup');
+            const dataPrimeiraGroup = document.getElementById('dataPrimeiraGroup');
+            
+            if (pagamento === 'parcelado') {
+                parcelasGroup.style.display = 'block';
+                dataPrimeiraGroup.style.display = 'block';
+            } else {
+                parcelasGroup.style.display = 'none';
+                dataPrimeiraGroup.style.display = 'none';
+            }
+        }
+
         async function addGasto() {
             const description = document.getElementById('gastoDescription').value;
             const category = document.getElementById('gastoCategory').value;
             const value = parseFloat(document.getElementById('gastoValue').value);
             const date = document.getElementById('gastoDate').value;
-
+            const pagamento = document.getElementById('gastoPagamento').value;
+            
             const alertDiv = document.getElementById('gastoAlert');
 
             if (!description || !category || !value || !date) {
@@ -631,6 +721,23 @@
                 return;
             }
 
+            // Se for parcelado, validar campos adicionais
+            let parcelas = 1;
+            let dataPrimeira = date;
+            
+            if (pagamento === 'parcelado') {
+                const parcelasSelect = document.getElementById('gastoParcelas').value;
+                const dataPrimeiraSelect = document.getElementById('gastoDataPrimeira').value;
+                
+                if (!parcelasSelect || !dataPrimeiraSelect) {
+                    showAlert(alertDiv, 'Preencha número de parcelas e data da primeira parcela', 'error');
+                    return;
+                }
+                
+                parcelas = parseInt(parcelasSelect);
+                dataPrimeira = getFirstParcelDate(dataPrimeiraSelect);
+            }
+
             try {
                 updateSyncStatus('loading', 'Salvando...');
                 
@@ -640,7 +747,9 @@
                 formData.append('description', description);
                 formData.append('category', category);
                 formData.append('value', value);
-                formData.append('pagamento', 'À Vista');
+                formData.append('pagamento', pagamento === 'parcelado' ? 'Parcelado' : 'À Vista');
+                formData.append('parcelas', parcelas);
+                formData.append('dataPrimeira', dataPrimeira);
                 
                 await fetch(APPS_SCRIPT_URL, { method: 'POST', body: formData });
                 
@@ -651,6 +760,10 @@
                 document.getElementById('gastoCategory').value = '';
                 document.getElementById('gastoValue').value = '';
                 document.getElementById('gastoDate').value = today;
+                document.getElementById('gastoPagamento').value = 'avista';
+                document.getElementById('gastoParcelas').value = '';
+                document.getElementById('gastoDataPrimeira').value = '';
+                toggleParcelaFields();
                 
                 showAlert(alertDiv, 'Gasto registrado com sucesso!', 'success');
                 setTimeout(() => { alertDiv.innerHTML = ''; }, 3000);
@@ -694,6 +807,36 @@
             }
         }
 
+        function getParceledAmountUntilToday(dataPrimeira, parcelas, valorTotal) {
+            // Calcula quantas parcelas já venceram até hoje
+            if (!dataPrimeira || parcelas <= 1) {
+                return valorTotal; // À vista ou 1x
+            }
+
+            const hoje = new Date();
+            const hoje_year = hoje.getFullYear();
+            const hoje_month = hoje.getMonth(); // 0-11
+
+            // Parsear data primeira (YYYY-MM-DD)
+            const [year, month, day] = dataPrimeira.split('-').map(Number);
+            const primeira_year = year;
+            const primeira_month = month - 1; // Converter pra 0-11
+
+            // Calcular quantos meses passaram desde a primeira parcela até hoje
+            const meses_passados = (hoje_year - primeira_year) * 12 + (hoje_month - primeira_month);
+
+            // Se ainda não chegou na primeira parcela, não desconta nada
+            if (meses_passados < 0) {
+                return 0;
+            }
+
+            // Quantas parcelas já venceram (mínimo 1 se chegou na data, máximo = parcelas)
+            const parcelas_vencidas = Math.min(meses_passados + 1, parcelas);
+
+            const valor_parcela = valorTotal / parcelas;
+            return valor_parcela * parcelas_vencidas;
+        }
+
         function cleanDate(dateStr) {
             if (!dateStr) return '';
             // Extrai apenas YYYY-MM-DD de formatos como "2026-08-26T03:00:00.000Z"
@@ -733,6 +876,56 @@
             return '';
         }
 
+        function calculatePropertyValueAtYear(year) {
+            // Calcula quanto o imóvel valia em 31/12 do ano escolhido
+            const baseValue = 250000; // Financiamento
+            
+            const yearEnd = `${year}-12-31`;
+            
+            // Soma gastos que já venceram até 31/12 do ano
+            const gastoAteAno = data.gastos.reduce((sum, g) => {
+                const valor = cleanCurrency(g['Valor']);
+                const parcelas = parseInt(g['Parcelas']) || 1;
+                const dataPrimeira = g['Data Primeira Parcela'] || g['Data'];
+                
+                // Calcular quantas parcelas venceram até 31/12 do ano escolhido
+                if (!dataPrimeira) return sum;
+                
+                const [d_year, d_month, d_day] = dataPrimeira.split('-').map(Number);
+                const d_primeira = new Date(d_year, d_month - 1, 1);
+                const d_fim = new Date(year, 11, 31); // 31/12 do ano
+                
+                if (d_primeira > d_fim) {
+                    // Primeira parcela ainda não venceu nesse ano
+                    return sum;
+                }
+                
+                // Calcular meses entre primeira parcela e fim do ano
+                const meses = (d_fim.getFullYear() - d_primeira.getFullYear()) * 12 + (d_fim.getMonth() - d_primeira.getMonth()) + 1;
+                const parcelas_vencidas = Math.min(meses, parcelas);
+                const valor_parcela = valor / parcelas;
+                
+                return sum + (valor_parcela * parcelas_vencidas);
+            }, 0);
+            
+            return baseValue + gastoAteAno;
+        }
+
+        // Event listener para dropdown de Declaração de Bens
+        document.addEventListener('DOMContentLoaded', function() {
+            const declaracaoAnoSelect = document.getElementById('declaracaoAno');
+            if (declaracaoAnoSelect) {
+                declaracaoAnoSelect.addEventListener('change', function() {
+                    if (this.value) {
+                        const valor = calculatePropertyValueAtYear(parseInt(this.value));
+                        document.getElementById('declaracaoValor').textContent = formatCurrency(valor);
+                    } else {
+                        document.getElementById('declaracaoValor').textContent = 'R$ 0,00';
+                    }
+                });
+            }
+        });
+
         function calculateTotals() {
             const claudiaAport = data.aportes
                 .filter(a => a['Pessoa'] === 'Claudia')
@@ -748,9 +941,19 @@
             
             const totalAport = claudiaAport + rodrigoAport + maeAport;
             
-            const totalGasto2026 = data.gastos
-                .filter(g => g['Data'] && g['Data'] <= '2026-12-31')
-                .reduce((sum, g) => sum + cleanCurrency(g['Valor']), 0);
+            // Calcula gastos considerando parcelas
+            const totalGasto = data.gastos.reduce((sum, g) => {
+                const valor = cleanCurrency(g['Valor']);
+                const parcelas = parseInt(g['Parcelas']) || 1;
+                const dataPrimeira = g['Data Primeira Parcela'] || g['Data'];
+                
+                // Desconta apenas o que já venceu
+                const gastoVencido = getParceledAmountUntilToday(dataPrimeira, parcelas, valor);
+                return sum + gastoVencido;
+            }, 0);
+            
+            // Mantém totalGasto2026 pra compatibilidade (agora é o total até hoje)
+            const totalGasto2026 = totalGasto;
             
             return { claudiaAport, rodrigoAport, maeAport, totalAport, totalGasto2026 };
         }
@@ -855,6 +1058,9 @@
             status.textContent = message;
             status.className = 'sync-status ' + type;
         }
+
+        // Adicionar event listener para mostrar/esconder campos de parcela
+        document.getElementById('gastoPagamento').addEventListener('change', toggleParcelaFields);
 
         // Load on start only
         loadData();
